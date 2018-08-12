@@ -1,0 +1,64 @@
+Description: "Create SSM Parameter"
+Parameters:
+  DBPassword:
+    NoEcho: 'true'
+    Description: The WordPress database admin account password
+    Type: String
+    Default: 'test1234'
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: "[a-zA-Z0-9]*"
+    ConstraintDescription: must contain only alphanumeric characters.
+  DBRootPassword:
+    NoEcho: 'true'
+    Description: MySQL root password
+    Type: String
+    Default: 'test1234'
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: "[a-zA-Z0-9]*"
+    ConstraintDescription: must contain only alphanumeric characters.
+Resources:
+  DBPass:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: "command"
+      Name: /blakey/database/dbpassword
+      Type: "String"
+      Value: !Ref DBPassword
+  DBRRootPass:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: "command"
+      Name: /blakey/database/dbrootpassword
+      Type: "String"
+      Value: !Ref DBRootPassword
+  BeesSSH:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: "command"
+      Name: /blakey/wordpress/beesssh
+      Type: "String"
+      Value: "-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAqTIOjEqpt8nuxGVKHws8L4XTaSEk4uPv1dHNpXUcO9rBSSopmiyx3beNn9uV
+mqfgmMm/eoIl5/2enpLyrMr5xAD8IZHAu3FiRTb0LvaLX/sr5bfjVJsPIvkCk8khbPxgVdMVnZv3
+W6yZKNJ4pjnQ/WIuCFKbFLU9nnp7+VilpmD7xrenA3eJ4or5AaVUxFTAU2YaCkLt0W9WZ0qd4Wzp
+eT1W/krNdZ4HFv2ovRM7VuFpE/sh83XrCE1HDrpGd6ynLbN2ax4EuEszGMW1qRHCupNxRReEQWW2
+pHjqimd/U1lf8o2AayqiC2djY1LeHH6wM2LgX0qEbL0XHd4yTgh2kQIDAQABAoIBADkAOzR6Zukb
+J8yUjz8cKt+bx1iQqPujbQZtE0odxTBJB3sdsDxXuGiI0Ta85I7g5eKzfUXJmPmqUQj9WrJqA3FM
+H6UzlGnRzhihZex4dQYV+Xj/1Z+ISbYvi/W7+f3cnJvtbEfX5qLE6Ch/l9PwgH8M15NIOSTl1meQ
+vjmH6u69CWtV8sf/RTBVBWsvY6TqKfUahBCDcfXvMn0Iwscm78EFpb+TO09H8kYSnUgdVMPPMmJk
+HxDm8Z3oh3RYkNh+JZb5FRSbxpTVz0rOCExn4vn7jbQ9ILlHr8qenWVuNyoNGIEu4/v2YkBt4CUk
+O+UQSjNOaRMFmaKm9+Kg21D0eR0CgYEA9vnTFjHbr9RvWFRrRUP5nskeyHB0Tkk77vi2CY6GzVuF
+bfyia6QwicE63eG2v+ZxW0pp/+7/to9a8Xckas2i5XlFT4n8aQ2B0IR+O5PPq8tSqZXR5Nw9D0Z8
+tW9Lm2ipbd3+dTboBoMXQz9LRUcXWoToafn+9J7B+X407+tnwwcCgYEAr2Cvww8zC3zwgn5CP5fB
+oUDDNNttaFBEGHUj3oT9zIfFTgRk8tDYUSWzugwz5uuzoyTSuwVsimEnDSZT7Z+vIZ1xFbAiNXPY
+p2MFYr/WcJA3bTyROH+xwrctwGSQ6LPIgic1yR2rXQn/oNeO3FWsimJgBae2qoz8R9JST6Plm6cC
+gYBVYvYJ3F75oVaFkVos7l1k+l+8KLTtRACGlFJLZ41Pfm7ZIdj9ohxt4/J4N8s4+XEDgOy44WZj
+NZjZlrlue33wHEdMQoaTw2m4L7Z83pOT7426t+ODXml12IbRK5NWPY8mPvP0jnEVn0jxpPZfEz8N
+upmn2hi9dg3WNj4THK4ZDQKBgHb06SMw2xnOvEB3La5+3Crph78Bm1tnHllMk3Dq2k/yQ+WgW2zM
+Nf4MybTHdCkM9UMSxhFvI2lVbqyfs8v5RUxSw5LHbty84FbhdpS9tNGTMNVagNJG4ydFIrZeQGBn
+GfkWaYgqJMMt9gN+Uvum7SrMgX80fFWA3dpFkelNLX//AoGBAOzqwPCUDCfUybKLPBFFeZ+ARY/D
+z3US4QvlDDx4gLFN4e204miL0xf53u2lfkrYB+zPiAg8ydYrg3bvKMBgHvohEU9Uu8GV8BhcgB+Y
+Arrtwb+LQEcrkXzv5XRX7AoZdpgfIYhC5bHykAtcrBXk30p/DiuLJPBpp580j0AFMEy8
+-----END RSA PRIVATE KEY-----"

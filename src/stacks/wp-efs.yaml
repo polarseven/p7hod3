@@ -1,0 +1,58 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  VolumeName:
+    Description: Name of EFS share
+    Type: String
+  PrivateSubnet1:
+    Description: Subnet id of subnet to efs
+    Type: AWS::EC2::Subnet::Id
+  PrivateSubnet2:
+    Description: Subnet id of subnet to efs
+    Type: AWS::EC2::Subnet::Id
+  VpcId:
+    Description: Vpc for security group
+    Type: AWS::EC2::VPC::Id
+Resources:
+  FileSystem:
+    Type: AWS::EFS::FileSystem
+    Properties:
+      PerformanceMode: generalPurpose
+      FileSystemTags:
+      - Key: Name
+        Value:
+          Ref: VolumeName
+  MountTarget1:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId:
+        Ref: FileSystem
+      SubnetId:
+        Ref: PrivateSubnet1
+      SecurityGroups:
+      - Ref: MountTargetSecurityGroup
+  MountTarget2:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId:
+        Ref: FileSystem
+      SubnetId:
+        Ref: PrivateSubnet2
+      SecurityGroups:
+      - Ref: MountTargetSecurityGroup
+  MountTargetSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Ref: VpcId
+      GroupDescription: Security group for mount target
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '2049'
+        ToPort: '2049'
+        CidrIp: 0.0.0.0/0
+Outputs:
+  FileSystemID:
+    Description: File system ID
+    Value:
+      Ref: FileSystem
