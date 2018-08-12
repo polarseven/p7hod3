@@ -480,16 +480,19 @@ Resources:
       AWS::CloudFormation::Init:
         configSets:
           wordpress_install_all:
-          - install_cfn
-          - attach_ebs
-          - install_wordpress
-          - configure_wordpress
+            - install_cfn
+            - attach_ebs
+            - yum_install
+            - mysql-conf
+            - download_wordpress
+            - start_services
+            - setup_wordpress
           wordpress_install_part:
-          - install_cfn
-          - attach_ebs
-          - yum_install
-          - mysql-conf
-          - start_services
+            - install_cfn
+            - attach_ebs
+            - yum_install
+            - mysql-conf
+            - start_services
         install_cfn:
           files:
             "/etc/cfn/cfn-hup.conf":
@@ -511,12 +514,8 @@ Resources:
                 Fn::Join:
                 - ''
                 - - "[cfn-auto-reloader-hook]\n"
-                  - 'triggers=post.update
-
-'
-                  - 'path=Resources.WebServer.Metadata.AWS::CloudFormation::Init
-
-'
+                  - 'triggers=post.update'
+                  - 'path=Resources.WebServer.Metadata.AWS::CloudFormation::Init'
                   - 'action=/opt/aws/bin/cfn-init -v '
                   - "         --stack "
                   - Ref: AWS::StackName
@@ -566,7 +565,7 @@ Resources:
             link_wordpress:
               command:
                 "mkdir /var/www; ln -s /data/html /var/www "
-        install_wordpress:
+        yum_install:
           packages:
             yum:
               php: []
@@ -576,8 +575,33 @@ Resources:
               mysql-devel: []
               mysql-libs: []
               httpd: []
+        mysql-conf:
+          files:
+            "/etc/my.cnf":
+              source:
+                Fn::Join:
+                - ''
+                - - https://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo
+                  - "/scripts/my.cnf"
+              context:
+                region:
+                  Ref: AWS::Region
+              mode: '000744'
+              owner: mysql
+              group: mysql
+        download_wordpress:
           sources:
             "/var/www/html": http://wordpress.org/latest.tar.gz
+        start_services:
+          services:
+            sysvinit:
+              httpd:
+                enabled: 'true'
+                ensureRunning: 'true'
+              mysqld:
+                enabled: 'true'
+                ensureRunning: 'true'
+        setup_wordpress:
           files:
             "/tmp/setup.mysql":
               content:
@@ -596,9 +620,7 @@ Resources:
                   - ".* TO '"
                   - Ref: DBUser
                   - "'@'localhost';\n"
-                  - 'FLUSH PRIVILEGES;
-
-'
+                  - 'FLUSH PRIVILEGES;'
               mode: '000400'
               owner: root
               group: root
@@ -607,36 +629,19 @@ Resources:
                 Fn::Join:
                 - ''
                 - - "#!/bin/bash -xe\n"
-                  - 'cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
-
-'
+                  - 'cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php'
                   - sed -i "s/'database_name_here'/'
                   - Ref: DBName
-                  - '''/g" wp-config.php
-
-'
+                  - '''/g" wp-config.php'
                   - sed -i "s/'username_here'/'
                   - Ref: DBUser
-                  - '''/g" wp-config.php
-
-'
+                  - '''/g" wp-config.php'
                   - sed -i "s/'password_here'/'
                   - Ref: DBPassword
-                  - '''/g" wp-config.php
-
-'
+                  - '''/g" wp-config.php'
               mode: '000500'
               owner: root
               group: root
-          services:
-            sysvinit:
-              httpd:
-                enabled: 'true'
-                ensureRunning: 'true'
-              mysqld:
-                enabled: 'true'
-                ensureRunning: 'true'
-        configure_wordpress:
           commands:
             01_set_mysql_root_password:
               command:
@@ -700,7 +705,7 @@ Resources:
             - "         --stack "
             - Ref: AWS::StackName
             - "         --resource WebServer "
-            - "         --configsets wordpress_install "
+            - "         --configsets wordpress_install_all "
             - "         --region "
             - Ref: AWS::Region
             - "\n"
