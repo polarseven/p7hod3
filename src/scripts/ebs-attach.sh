@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 VOLUME_ID=""
 MOUNT_POINT=""
@@ -18,6 +18,9 @@ function mount_device() {
         echo "attaching volume"
         aws ec2 attach-volume --volume-id $VOLUME_ID --instance-id $INSTANCE_ID --device $DEVICE --region ap-southeast-2
         NEXT_WAIT_TIME=0
+
+        # Get the value of the SSM param not the CFN parameter value
+        INSTALLED=`aws ssm get-parameter --name /blakey/wordpress/installed --region ap-southeast-2 | jq .[]."Value" | sed 's/\"//g'`
         echo "format disk = $INSTALLED"
         if [ "$INSTALLED" = "false" ]; then
           echo "mkfs -t ext4 /dev/xvdf"
@@ -47,7 +50,6 @@ function mount_device() {
             sudo mkdir -p /data/html
             sudo mkdir -p /data/mysql
         fi
-        aws ssm put-parameter --name "/blakey/wordpress/installed" --value "true" --type String --overwrite --region ap-southeast-2
 }
 
 function check_volume() {

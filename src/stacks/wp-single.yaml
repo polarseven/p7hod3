@@ -514,8 +514,7 @@ Resources:
                 - ''
                 - - "/opt/ebs/ebs-attach.sh -v "
                   - Ref: NewVolume
-                  - " -m /data -i "
-                  - !GetAtt Installed.Value
+                  - " -m /data "
                   - " -d /dev/xvdf -p /dev/xvdf -t ext4 -f"
             link_wordpress:
               command:
@@ -667,9 +666,14 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           yum update -y aws-cfn-bootstrap
-          if [[ ${Installed.Value} == "false" ]]; then
-            /opt/aws/bin/cfn-init --stack ${AWS::StackName} --resource WebServer --configsets wordpress_install_all --region ${AWS::Region}
+          yum install -y jq
+          STATE=`aws ssm get-parameter --name /blakey/wordpress/installed --region ap-southeast-2 | jq .[]."Value" | sed 's/\"//g'`
+          echo "Installed = $STATE"
+          if [[ $STATE == "false" ]]; then
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource WebServer --configsets wordpress_install_all --region ${AWS::Region}
           else
-            /opt/aws/bin/cfn-init --stack ${AWS::StackName} --resource WebServer --configsets wordpress_install_part --region ${AWS::Region}
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource WebServer --configsets wordpress_install_part --region ${AWS::Region}
           fi
+          aws ssm put-parameter --name "/blakey/wordpress/installed" --value "true" --type String --overwrite --region ap-southeast-2
+
       
