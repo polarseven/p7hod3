@@ -459,7 +459,6 @@ Resources:
         ToPort: '22'
         CidrIp:
           Ref: SSHLocation
-
   WebserverAutoscalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -480,7 +479,6 @@ Resources:
       AWS::CloudFormation::Init:
         configSets:
           wordpress_install_all:
-            - install_cfn
             - attach_ebs
             - yum_install
             - mysql-conf
@@ -488,53 +486,10 @@ Resources:
             - start_services
             - setup_wordpress
           wordpress_install_part:
-            - install_cfn
             - attach_ebs
             - yum_install
             - mysql-conf
             - start_services
-        install_cfn:
-          files:
-            "/etc/cfn/cfn-hup.conf":
-              content:
-                Fn::Join:
-                - ''
-                - - "[main]\n"
-                  - stack=
-                  - Ref: AWS::StackId
-                  - "\n"
-                  - region=
-                  - Ref: AWS::Region
-                  - "\n"
-              mode: '000400'
-              owner: root
-              group: root
-            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
-              content:
-                Fn::Join:
-                - ''
-                - - "[cfn-auto-reloader-hook]\n"
-                  - 'triggers=post.update'
-                  - 'path=Resources.WebServer.Metadata.AWS::CloudFormation::Init'
-                  - 'action=/opt/aws/bin/cfn-init -v '
-                  - "         --stack "
-                  - Ref: AWS::StackName
-                  - "         --resource WebServer "
-                  - "         --configsets wordpress_install "
-                  - "         --region "
-                  - Ref: AWS::Region
-                  - "\n"
-              mode: '000400'
-              owner: root
-              group: root
-          services:
-            sysvinit:
-              cfn-hup:
-                enabled: 'true'
-                ensureRunning: 'true'
-                files:
-                - "/etc/cfn/cfn-hup.conf"
-                - "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
         attach_ebs:
           packages:
             yum: 
@@ -589,9 +544,11 @@ Resources:
               mode: '000744'
               owner: mysql
               group: mysql
-        download_wordpress:
-          sources:
-            "/var/www/html": http://wordpress.org/latest.tar.gz
+          commands:
+            01_link_data:
+              command: "rmdir /var/lib/mysql; ln -s /data/mysql /var/lib/mysql"
+            02_chown_mysql:
+              command: "chown -R mysql:mysql /data/mysql"
         start_services:
           services:
             sysvinit:
@@ -601,6 +558,9 @@ Resources:
               mysqld:
                 enabled: 'true'
                 ensureRunning: 'true'
+        download_wordpress:
+          sources:
+            "/var/www/html": http://wordpress.org/latest.tar.gz
         setup_wordpress:
           files:
             "/tmp/setup.mysql":
@@ -620,7 +580,9 @@ Resources:
                   - ".* TO '"
                   - Ref: DBUser
                   - "'@'localhost';\n"
-                  - 'FLUSH PRIVILEGES;'
+                  - 'FLUSH PRIVILEGES;
+
+'
               mode: '000400'
               owner: root
               group: root
@@ -629,16 +591,24 @@ Resources:
                 Fn::Join:
                 - ''
                 - - "#!/bin/bash -xe\n"
-                  - 'cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php'
+                  - 'cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
+
+'
                   - sed -i "s/'database_name_here'/'
                   - Ref: DBName
-                  - '''/g" wp-config.php'
+                  - '''/g" wp-config.php
+
+'
                   - sed -i "s/'username_here'/'
                   - Ref: DBUser
-                  - '''/g" wp-config.php'
+                  - '''/g" wp-config.php
+
+'
                   - sed -i "s/'password_here'/'
                   - Ref: DBPassword
-                  - '''/g" wp-config.php'
+                  - '''/g" wp-config.php
+
+'
               mode: '000500'
               owner: root
               group: root
@@ -694,28 +664,12 @@ Resources:
       KeyName:
         Ref: KeyName
       UserData:
-        Fn::Base64:
-          Fn::Join:
-          - ''
-          - - "#!/bin/bash -xe\n"
-            - 'yum update -y aws-cfn-bootstrap
-
-'
-            - "/opt/aws/bin/cfn-init -v "
-            - "         --stack "
-            - Ref: AWS::StackName
-            - "         --resource WebServer "
-            - "         --configsets wordpress_install_all "
-            - "         --region "
-            - Ref: AWS::Region
-            - "\n"
-            - "/opt/aws/bin/cfn-signal -e $? "
-            - "         --stack "
-            - Ref: AWS::StackName
-            - "         --resource WebServer "
-            - "         --region "
-            - Ref: AWS::Region
-            - "\n"
-    CreationPolicy:
-      ResourceSignal:
-        Timeout: PT15M
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y aws-cfn-bootstrap
+          if [[ ${Installed.Value} == "false" ]]; then
+            /opt/aws/bin/cfn-init --stack ${AWS::StackName} --resource WebServer --configsets wordpress_install_all --region ${AWS::Region}
+          else
+            /opt/aws/bin/cfn-init --stack ${AWS::StackName} --resource WebServer --configsets wordpress_install_part --region ${AWS::Region}
+          fi
+      
