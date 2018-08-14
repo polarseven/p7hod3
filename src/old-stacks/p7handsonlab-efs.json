@@ -1,0 +1,80 @@
+{
+    "AWSTemplateFormatVersion":"2010-09-09",
+    "Parameters":{
+      "VpcId": {
+        "Description": "Subnet id of subnet to efs",
+        "Type": "AWS::EC2::VPC::Id"
+      },
+      "PrivateSubnet1": {
+        "Description": "Subnet id of subnet to efs",
+        "Type": "AWS::EC2::Subnet::Id"
+      },
+      "PrivateSubnet2": {
+        "Description": "Subnet id of subnet to efs",
+        "Type": "AWS::EC2::Subnet::Id"
+      } 
+    },
+  "Resources":{
+    "FileSystem": {
+      "Type": "AWS::EFS::FileSystem",
+        "Properties": {
+          "PerformanceMode": "generalPurpose",
+          "FileSystemTags": [
+            {
+              "Key": "Name",
+              "Value": "p7handsonlab-efs"
+            }
+          ]
+        }
+      },
+    "MountTarget1": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+          "FileSystemId": { "Ref": "FileSystem" },
+          "SubnetId": { "Ref": "PrivateSubnet1" },
+          "SecurityGroups": [ { "Ref": "MountTargetSecurityGroup" } ]        
+        }
+      },
+      "MountTarget2": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+          "FileSystemId": { "Ref": "FileSystem" },
+          "SubnetId": { "Ref": "PrivateSubnet2" },
+          "SecurityGroups": [ { "Ref": "MountTargetSecurityGroup" } ]        
+        }
+      },
+      "MountTargetSecurityGroup": {
+        "Type": "AWS::EC2::SecurityGroup",
+        "Properties": {
+          "VpcId": { "Ref": "VpcId" },
+          "GroupDescription": "Security group for mount target",
+          "SecurityGroupIngress": [
+            {
+              "IpProtocol": "tcp",
+              "FromPort": "2049",
+              "ToPort": "2049",
+              "CidrIp": "0.0.0.0/0"
+            }
+          ]
+        }
+      },
+      "RecoredSetEFS": {     
+        "Properties": {
+          "HostedZoneName": "p7handsonlab.com.",
+          "Name": "efs.p7handsonlab.com",
+          "ResourceRecords": [
+            { "Fn::Join": [ "", [ { "Ref" : "FileSystem" }, ".efs.", { "Ref": "AWS::Region" }, ".amazonaws.com"] ]}
+          ],
+          "TTL": "900",
+          "Type": "CNAME"
+        },
+        "Type": "AWS::Route53::RecordSet"
+      }
+  },
+  "Outputs":{
+      "FileSystemID" : {
+        "Description" : "File system ID",
+        "Value" :  { "Ref" : "FileSystem" }
+      }
+    }
+  }
