@@ -1,0 +1,87 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: RDS MySQL Database - single AZ
+Mappings: {}
+Parameters:
+  VpcId:
+    Description: VPC ID which application servers will host in.
+    Type: AWS::EC2::VPC::Id
+  PrivateApplicationSubnetZone1:
+    Description: Private subnet ID 1.
+    Type: AWS::EC2::Subnet::Id
+  PrivateApplicationSubnetZone2:
+    Description: Private subnet ID 2.
+    Type: AWS::EC2::Subnet::Id
+  DbPassword:
+    Type: String
+    Description: root password for DB
+    Default: p7handsonlab
+    AllowedValues:
+    - p7handsonlab
+  DbUserName:
+    Description: DbUserName
+    Type: String
+    Default: admin
+    AllowedValues:
+    - admin
+Resources:
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: DBSubnetGroup
+      SubnetIds:
+      - Ref: PrivateApplicationSubnetZone1
+      - Ref: PrivateApplicationSubnetZone2
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Ref: VpcId
+      GroupDescription: Open database for access
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '3306'
+        ToPort: '3306'
+        CidrIp: 10.0.0.0/16
+  WordPressDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: '5'
+      StorageType: gp2
+      DBInstanceClass: db.t2.micro
+      Engine: MySQL
+      MasterUsername:
+        Ref: DbUserName
+      MasterUserPassword:
+        Ref: DbPassword
+      VPCSecurityGroups:
+      - Fn::GetAtt:
+        - DBSecurityGroup
+        - GroupId
+      PubliclyAccessible: 'false'
+      DBSubnetGroupName:
+        Ref: DBSubnetGroup
+  RecoredSetEFS:
+    Properties:
+      HostedZoneName: p7handsonlab.com.
+      Name: rds.p7handsonlab.com
+      ResourceRecords:
+      - Fn::GetAtt:
+        - WordPressDB
+        - Endpoint.Address
+      TTL: '900'
+      Type: CNAME
+    Type: AWS::Route53::RecordSet
+Outputs:
+  RdsEndpoint:
+    Description: Address of database endpoint
+    Value:
+      Fn::GetAtt:
+      - WordPressDB
+      - Endpoint.Address
+  RdsPort:
+    Description: Database endpoint port number
+    Value:
+      Fn::GetAtt:
+      - WordPressDB
+      - Endpoint.Port

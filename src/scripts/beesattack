@@ -1,0 +1,2 @@
+#!/bin/sh
+/usr/local/sbin/bees attack -n 10000 -c 250 -u http://$1

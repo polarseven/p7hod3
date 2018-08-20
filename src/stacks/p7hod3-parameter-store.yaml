@@ -1,0 +1,46 @@
+Description: "Create SSM Parameter"
+Parameters:
+  DBPassword:
+    NoEcho: 'true'
+    Description: The WordPress database admin account password
+    Type: String
+    Default: 'test1234'
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: "[a-zA-Z0-9]*"
+    ConstraintDescription: must contain only alphanumeric characters.
+  DBRootPassword:
+    NoEcho: 'true'
+    Description: MySQL root password
+    Type: String
+    Default: 'test1234'
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: "[a-zA-Z0-9]*"
+    ConstraintDescription: must contain only alphanumeric characters.
+  BeesSSH:
+    NoEcho: 'true'
+    Description: MySQL root password
+    Type: String
+Resources:
+  DBPass:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: "command"
+      Name: /blakey/database/dbpassword
+      Type: "String"
+      Value: !Ref DBPassword
+  DBRRootPass:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: "command"
+      Name: /blakey/database/dbrootpassword
+      Type: "String"
+      Value: !Ref DBRootPassword
+  BeesSSHkey:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: "command"
+      Name: /blakey/wordpress/beesssh
+      Type: "String"
+      Value: !Ref BeesSSH

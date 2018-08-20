@@ -1,0 +1,2 @@
+#!/bin/sh
+/usr/local/sbin/bees up -s $1 -g bees -k bees

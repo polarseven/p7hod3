@@ -39,18 +39,34 @@
     .dropbtn2:hover, .dropbtn2:focus {
         background-color:  #f38482 ;
     }
+    .dropbtn3 {
+        background-color: rgb(5, 79, 121);
+        color: rgb(227, 230, 217);
+        width: 200px;
+        padding: 5px;
+        font-size: 14px;
+        font-weight: bolder;
+        border-radius: 0px;
+	    border: solid 1px #20538D;
+        cursor: pointer;
+        margin: 5px 25px;
+    }
+    .dropbtn3:hover, .dropbtn3:focus {
+        background-color:  #f38482 ;
+    }
     div button{
     display:inline-block;
     } 
+}
 
 
    
 </style>
 
-<img src="p7handsonlabs2.png" alt="p7handsonlabs" width="510" height="285">
+<img src="p7handsonlabs3.jpg" alt="p7handsonlabs" width="510" height="285">
 
 <body>
-<h1>Optimization - Security, Reliability, Performance, Operational Excellence & cost</h1>
+<h1>Optimization - Security, Reliability, Performance, Operational Excellence & Cost</h1>
 <hr>
 <br>
 1. 
@@ -59,105 +75,88 @@
     <input type="submit" value="Prerequisites" class="dropbtn" />
 </form>
 
-<h3>Setup Github Account</h3>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/github-signup.pdf', '_blank')" >How to Create a Github Account</button>
-<br>
 <h3>Create SSH Key</h3>
 <button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/ec2/home?region=ap-southeast-2#KeyPairs:sort=keyName', '_blank')" >Create SSH Key</button>
+<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/ec2/home?region=us-east-1#KeyPairs:sort=keyName', '_blank')" >Create SSH Key for Load Testing</button>
 <br>
 <br>
+<hr>
+<hr>
+<br>
+
+<h3>Create Stack to Load Test Web Apps</h3>
+<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn%7EP7handsonlab-Bees-with-MachineGuns%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/stacks/p7hod3-bees.yaml', '_blank')" >Create Beehive</button>
+<br>
+<br>
+<hr>
 <hr>
 <br>
 
 2. <br> 
 <h3>Manual Creation of Wordpress from Bitnami Ami</h3> 
-<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7HandsOnLab-K8s-Kreator%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/stacks/k8s/k8s-creator.yml', '_blank')" >Create K8s Cluster</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://ap-southeast-2.console.aws.amazon.com/cloudwatch/home?region=ap-southeast-2#logStream:group=/p7handsondays;streamFilter=typeLogStreamPrefix', '_blank')" >Open CloudWatch Logs</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/stacks/k8s/k8s-creator.yml', '_blank')">Open Cloudformation Script</button>
+<button type="submit" class="dropbtn" onClick=" window.open('https://ap-southeast-2.console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:', '_blank')" >Create Bitnami Wordpress</button>
 <br>
 <br>
-<button type="submit" class="dropbtn2" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/kube-kontrol.txt', '_blank')" >Kubectl pod yaml</button>
+<button type="submit" class="dropbtn" onClick=" window.open('https://ap-southeast-2.console.aws.amazon.com/systems-manager/activations?region=us-east-1', '_blank')" >Open SSM to Unleash Bees</button>
+<br>
+<br>
+<form action="https://ap-southeast-2.console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#Instances:sort=desc:launchTime" method="get" target="_blank">
+    <input type="submit" value="Open EC2 Console & Delete Instance" class="dropbtn" />
+</form>
+<hr>
 <hr>
 <br>
 3. <br> 
 <h3>CloudFormation and Automation to Create Self Healing Stack</h3>
-<button type="submit" class="dropbtn" onClick=" window.open('https://github.com', '_blank')" >Login to Github</button>
+<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7handsonlab--vpc%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/stacks/p7hod3-single.yaml', '_blank')" >Create Single Instance WP</button>
 <br>
 <br>
-<button type="submit" class="dropbtn" onClick=" window.open('https://github.com/polarseven/ecs-demo-php-simple-app', '_blank')" >Connect to AWSLabs GitHub for demo app</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/Forking+a+Repository.pdf', '_blank')" >Forking a repo</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/githubtoken.pdf', '_blank')" >Create Github Token</button>
-<hr>
-<br>
-4. <br> 
-<h3>Make Stack stateless and Highly Available</h3>
-<button type="submit" class="dropbtn" onClick=" window.open('https://github.com', '_blank')" >Login to Github</button>
+<button type="submit" class="dropbtn" onClick=" window.open('https://ap-southeast-2.console.aws.amazon.com/systems-manager/activations?region=us-east-1', '_blank')" >Open SSM to Unleash Bees</button>
 <br>
 <br>
-<button type="submit" class="dropbtn" onClick=" window.open('https://github.com/polarseven/ecs-demo-php-simple-app', '_blank')" >Connect to AWSLabs GitHub for demo app</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/Forking+a+Repository.pdf', '_blank')" >Forking a repo</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/githubtoken.pdf', '_blank')" >Create Github Token</button>
-<hr>
-<br>
-5. <br> 
-<h3>Custom Metrics and Logging</h3>
-<button type="submit" class="dropbtn" onClick=" window.open('https://github.com', '_blank')" >Login to Github</button>
-<br>
-<br>
-<button type="submit" class="dropbtn" onClick=" window.open('https://github.com/polarseven/ecs-demo-php-simple-app', '_blank')" >Connect to AWSLabs GitHub for demo app</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/Forking+a+Repository.pdf', '_blank')" >Forking a repo</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/githubtoken.pdf', '_blank')" >Create Github Token</button>
-<br>
-<hr>
-<br>
-6. <br>
-<h3>Template to Create CI/CD Pipeline to Kubernetes</h3> 
-<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7HandsOnLab-K8s-Pipeline%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/stacks/K8Deploy/K8Pipeline.yaml', '_blank')" >Create CodePipeline with CodeDeploy</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/codepipeline/home?region=ap-southeast-2', '_blank')" >Open CodePipeline in AWS Console</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/p7handsonlab-wp.json', '_blank')">Open Cloudformation Script</button>
-<br>
-<br>
-<h3>Choose a new background for your demo app</h3>
-<form action="https://htmlcolorcodes.com/" method="get" target="_blank">
-    <input type="submit" value="Open Colour Picker" class="dropbtn" />
-</form>
-
-<br>
-<hr>
-7. <br>
-<h3>Integrate Gorilla Stack with Your Stack</h3> 
-<button type="submit" class="dropbtn" onClick=" window.open('https://www.pagerduty.com/', '_blank')" >Create Pagerduty Account</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/sns/home?region=ap-southeast-2', '_blank')" >Create SNS Topic</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/codedeploy/home?region=ap-southeast-2', '_blank')">Create Codedeploy Trigger</button>
-<br>
-<br>
-<button type="submit" class="dropbtn2" onClick=" window.open('https://www.pagerduty.com/docs/guides/aws-cloudwatch-integration-guide/', '_blank')">Pagerduty Setup Instructions</button>
-<br>
-<br>
-<hr>
-6. <br> 
-<h3>Delete Stacks from CloudFormation Console</h3>
 <form action="https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2" method="get" target="_blank">
     <input type="submit" value="Open CloudFormation in AWS Console" class="dropbtn" />
 </form>
 <br>
 <hr>
-<br> 
-<h3>References</h3>
-<button type="submit" class="dropbtn2" onClick=" window.open('https://kubernetes.io/docs/getting-started-guides/kops/', '_blank')">Kops in AWS (Kubernetes)</button>
-<button type="submit" class="dropbtn2" onClick=" window.open('https://aws.amazon.com/blogs/compute/kubernetes-clusters-aws-kops/', '_blank')">Kops in AWS (AWS)</button>
-<button type="submit" class="dropbtn2" onClick=" window.open('https://kubernetes.io/docs/reference/kubectl/cheatsheet/', '_blank')">Kubectl cheat sheet</button>
-<button type="submit" class="dropbtn2" onClick=" window.open('http://blog.arungupta.me/gossip-kubernetes-aws-kops/', '_blank')">Gossip based cluster</button>
 <hr>
 <br>
-7. <br> 
-<h3>CI/CD Using CodePipeline and Packer</h3>
-<button type="submit" class="dropbtn" onClick=" window.open('https://github.com', '_blank')" >Login to Github</button>
+4. <br> 
+<h3>Create HA & Stateless Wordpress Stack</h3>
+<br>
+<button type="submit" class="dropbtn3" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7handsonlab--vpc%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/stacks/p7hod3-vpc.yaml', '_blank')" >Create VPC</button>
+<button type="submit" class="dropbtn3" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7handsonlab-hostedzone%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/stacks/p7handsonlab-hostedzone.yaml', '_blank')" >Create Zone Record</button>
+<button type="submit" class="dropbtn3" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7HandsOnLab-EFS%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/stacks/p7handsonlab-efs.yaml', '_blank')" >Create EFS</button>
+<button type="submit" class="dropbtn3" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7HandsOnLab-RDS%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/stacks/p7handsonlab-rds.yaml', '_blank')" >Create RDS</button>
+    <button type="submit" class="dropbtn3" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7HandsOnLab-Bastion%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/stacks/p7handsonlab-bastion.yaml', '_blank')" >Create Bastion</button>
 <br>
 <br>
-<button type="submit" class="dropbtn" onClick=" window.open('https://github.com/polarseven/ecs-demo-php-simple-app', '_blank')" >Connect to AWSLabs GitHub for demo app</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/Forking+a+Repository.pdf', '_blank')" >Forking a repo</button>
-<button type="submit" class="dropbtn" onClick=" window.open('https://s3-ap-southeast-2.amazonaws.com/p7handsonlabs.polarseven.com/pdf/githubtoken.pdf', '_blank')" >Create Github Token</button>
+<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#cstack=sn%7EP7handsonlab-worpdress%7Cturl%7Ehttps://s3-ap-southeast-2.amazonaws.com/handsonlab-davideo/stacks/p7handsonlab-wp.yaml', '_blank')" >Create WP Stack witih CFN with Self Healing</button>
+<br>
+<br>
+<button type="submit" class="dropbtn" onClick=" window.open('https://ap-southeast-2.console.aws.amazon.com/systems-manager/activations?region=us-east-1', '_blank')" >Open SSM to Unleash Bees</button>
+<br>
+<br>
+<hr>
+<hr>
+5. <br> 
+<h3>Add Custom Monitoring and Log Shipping to Existing Stack</h3>
+<button type="submit" class="dropbtn" onClick=" window.open('https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2', '_blank')" >Create WP Stack witih CFN with Self Healing</button>
+<br>
+<br>
+<button type="submit" class="dropbtn" onClick=" window.open('https://ap-southeast-2.console.aws.amazon.com/systems-manager/activations?region=us-east-1', '_blank')" >Open SSM to Unleash Bees</button>
+<br>
+<br>
+<form action="https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2" method="get" target="_blank">
+    <input type="submit" value="Delete all stacks" class="dropbtn" />
+</form>
+<br>
+<h3>References</h3>
+<button type="submit" class="dropbtn2" onClick=" window.open('https://aws.amazon.com/architecture/well-architected/', '_blank')">Aws Well Architected Framework</button>
+<button type="submit" class="dropbtn2" onClick=" window.open('https://aws.amazon.com/cloudformation/', '_blank')">Cloudformation (AWS)</button>
+<button type="submit" class="dropbtn2" onClick=" window.open('https://github.com/awslabs', '_blank')">AWS Github CFN</button>
+<hr>
+<br>
 
 </body>
 </html>
