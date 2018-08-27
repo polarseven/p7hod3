@@ -10,5 +10,5 @@ AWS_SECRET=$($COMMAND/$ROLE/ | jq ."SecretAccessKey" | sed 's/"//g')
 cd ~/
 echo "[Credentials]" > .boto
 echo "aws_access_key_id = $AWS_ACCESS" >> .boto
-echo "aws_secret_acces_key = $AWS_SECRET" >> .boto
+echo "aws_secret_access_key = $AWS_SECRET" >> .boto
 chmod 600 .boto

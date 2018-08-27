@@ -1,13 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'AWS CloudFormation Sample Template WordPress_Multi_AZ: WordPress is
-  web software you can use to create a beautiful website or blog. This template installs
-  a highly-available, scalable WordPress deployment using a multi-az Amazon RDS database
-  instance for storage. It demonstrates using the AWS CloudFormation bootstrap scripts
-  to install packages and files at instance launch time. **WARNING** This template
-  creates an Amazon EC2 instance, an Elastic Load Balancer and an Amazon RDS database
-  instance. You will be billed for the AWS resources used if you create a stack from
-  this template.'
+Description: 'Use hosted zone as lookup table for dynamic endpoints'
 Parameters:
   VPCId:
     Description: ID of an existing VPC

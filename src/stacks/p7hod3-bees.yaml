@@ -423,6 +423,17 @@ Resources:
         ToPort: '22'
         CidrIp:
           Ref: SSHLocation
+  bees:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupName: bees
+      GroupDescription: sg for bees attackers
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '0'
+        ToPort: '65535'
+        CidrIp: 0.0.0.0/0
   Metadata:
     Type: AWS::EC2::Instance
     Metadata:
@@ -490,8 +501,8 @@ Resources:
               command: "mv /usr/local/bin/bees /usr/local/sbin/bees"
             3_ssh_key:
               command: "/opt/bees-ssh.sh"
-            4_boto_creds:
-              command: "/opt/cred.sh"
+            4_link_bees:
+              command: "ln -s /usr/local/sbin/bees /opt/bees"
         
     Properties:
       

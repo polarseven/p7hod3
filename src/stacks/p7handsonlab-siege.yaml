@@ -1,0 +1,322 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Environment
+        Parameters:
+          - VpcId
+          - PrivateSubnet1AID
+          - PrivateSubnet2AID
+          - PrivateSubnet3AID
+          - KeyPair
+      - Label:
+          default: Siege
+        Parameters:
+          - UrlForAttack
+          - Attackers
+    ParameterLabels:
+      VpcId:
+        default: VPC ID
+      PrivateSubnet1AID:
+        default: Private Subnet 1
+      PrivateSubnet2AID:
+        default: Private Subnet 2
+      PrivateSubnet3AID:
+        default: Private Subnet 3
+      KeyPair:
+        default: SSH KeyPair
+      UrlForAttack:
+        default: Attack URL
+      Attackers:
+        default: Number of Attackers
+
+Parameters:
+
+  VpcId:
+    Description: Vpc id.
+    Type: AWS::EC2::VPC::Id
+
+  PrivateSubnet1AID:
+    Description: Private application subnet in Availability Zone 1.
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet2AID:
+    Description: Private application subnet in Availability Zone 2.
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet3AID:
+    Description: Private application subnet in Availability Zone 3.
+    Type: AWS::EC2::Subnet::Id
+
+  UrlForAttack:
+    Description: URL for the attack
+    Type: String
+    Default: "http://localhost:80"
+
+  Attackers:
+    Description: Number of attacker instances
+    Type: String
+    Default: 1
+    AllowedValues: [1, 2, 3, 4, 5,6,7,8,9,10]
+
+  KeyPair:
+    Description: SSH KeyPair
+    Type: String
+    Default: "siege"
+
+Resources:
+
+  # Security Group
+  SiegeSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ECS Security Group
+      VpcId:
+        Ref: VpcId
+  SiegeSecurityGroupIngressSsh:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId:
+        Ref: SiegeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 0.0.0.0/0
+  SiegeSecurityGroupIngressHttp:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId:
+        Ref: SiegeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+
+  # IAM
+  SiegeRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+      Path: "/"
+    Type: AWS::IAM::Role
+  SiegeProfile:
+    Properties:
+      Path: /
+      Roles:
+      - Ref: SiegeRole
+    Type: AWS::IAM::InstanceProfile
+  SiegePolicyCloudWatch:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: SiegePolicyCloudWatch
+      PolicyDocument:
+        Statement:
+        - Action:
+          - cloudwatch:*
+          Effect: Allow
+          Resource: "*"
+        - Effect: Allow
+          Action:
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:DescribeLogGroups
+          - logs:DescribeLogStreams
+          - logs:PutLogEvents
+          Resource: "*"
+      Roles:
+      - Ref: SiegeRole
+
+  # LAUNCH CONFIGURATION
+  SiegeLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          default:
+          - awslogs
+          - nginx
+          - siege
+        nginx:
+          packages:
+            yum:
+              nginx: []
+          services:
+            sysvinit:
+              nginx:
+                enabled: true
+                ensureRunning: true
+        awslogs:
+          packages:
+            yum:
+              awslogs: []
+          files:
+            '/etc/awslogs/awscli.conf':
+              content: !Sub |
+                [default]
+                region = ${AWS::Region}
+                [plugins]
+                cwlogs = cwlogs
+              mode: '000644'
+              owner: root
+              group: root
+            '/etc/awslogs/awslogs.conf':
+              content: !Sub |
+                [general]
+                state_file = /var/awslogs/state/agent-state
+                use_gzip_http_content_encoding = true
+                [/var/log/secure]
+                file = /var/log/secure
+                log_group_name = /var/log/secure
+                log_stream_name = Siege-{instance_id}
+                datetime_format = %b %d %H:%M:%S
+                [/var/log/messages]
+                file = /var/log/messages
+                log_group_name = /var/log/messages
+                log_stream_name = Siege-{instance_id}
+                datetime_format = %b %d %H:%M:%S
+                [/var/log/user-data]
+                file = /var/log/user-data.log
+                log_group_name = /var/log/user-data
+                log_stream_name = Siege-{instance_id}
+                datetime_format = %b %d %H:%M:%S
+                [/var/log/cfn-init]
+                file = /var/log/cfn-init.log
+                log_group_name = /var/log/cfn-init
+                log_stream_name = Siege-{instance_id}
+                datetime_format = %b %d %H:%M:%S
+                [/var/log/cfn-init-cmd]
+                file = /var/log/cfn-init-cmd.log
+                log_group_name = /var/log/cfn-init-cmd
+                log_stream_name = Siege-{instance_id}
+                datetime_format = %b %d %H:%M:%S
+              mode: '000644'
+              owner: root
+              group: root
+            '/etc/awslogs/awscli.conf':
+              content: !Sub |
+                [default]
+                region = ${AWS::Region}
+                [plugins]
+                cwlogs = cwlogs
+              mode: '000644'
+              owner: root
+              group: root
+          commands:
+            1-mkdir:
+              command: mkdir -p /var/awslogs/state
+              test: "! test -d /var/awslogs/state"
+          services:
+            sysvinit:
+              awslogs:
+                enabled: true
+                ensureRunning: true
+                files:
+                - '/etc/awslogs/awslogs.conf'
+                - '/etc/awslogs/awscli.conf'
+        siege:
+          packages:
+            yum:
+              siege: []
+          files:
+            "/opt/p7/scripts/siege.sh":
+              content: !Sub |
+                #!/bin/bash
+                attacks=0
+                for attacks in 100 500 1000
+                do
+                  echo -n "$attacks "
+                  seconds=1
+                  until [ $seconds -gt 120 ]
+                  do
+                    echo $seconds
+                    siege -c$attacks -t1s -d1 ${UrlForAttack}
+                    aws cloudwatch put-metric-data --metric-name Attacks --namespace Siege --unit Count --value $attacks --region ${AWS::Region}
+                    ((seconds++))
+                  done
+                done
+              mode: '000744'
+              owner: root
+              group: root
+          commands:
+            1-runSiegeCron:
+              command: echo "*/10 * * * * root /opt/p7/scripts/siege.sh" >> /etc/crontab
+              # command: /opt/p7/scripts/siege.sh
+    Properties:
+      IamInstanceProfile: !Ref SiegeProfile
+      ImageId: ami-09b42976632b27e9b          # ap-southeast-2 Amazon Linux AMI
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPair
+      InstanceMonitoring: false
+      AssociatePublicIpAddress: true
+      SecurityGroups:
+        - !Ref SiegeSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum-config-manager --enable epel
+          yum update -y aws-cfn-bootstrap
+          /opt/aws/bin/cfn-init -s ${AWS::StackName} --resource SiegeLaunchConfiguration --configsets default --region ${AWS::Region}
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource SiegeAutoScalingGroup --region ${AWS::Region}
+
+  # AUTOSCALING GROUP
+  SiegeAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    CreationPolicy:
+      AutoScalingCreationPolicy:
+          MinSuccessfulInstancesPercent: "100"
+      ResourceSignal:
+        Count: !Ref Attackers
+        Timeout: PT10M
+    Properties:
+      AvailabilityZones:
+        - ap-southeast-2a
+        - ap-southeast-2b
+        - ap-southeast-2c
+      LaunchConfigurationName: !Ref SiegeLaunchConfiguration
+      DesiredCapacity: !Ref Attackers
+      MaxSize: !Ref Attackers
+      MinSize: !Ref Attackers
+      HealthCheckType: EC2
+      HealthCheckGracePeriod: '900'
+      VPCZoneIdentifier:
+        - Ref: PrivateSubnet1AID
+        - Ref: PrivateSubnet2AID
+        - Ref: PrivateSubnet3AID
+      Tags:
+        - Key: Name
+          Value: Siege Instances
+          PropagateAtLaunch: 'true'
+
+  SiegeDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub ${AWS::StackName}-Siege
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 18,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                    [ "Siege", "Attacks", { "period": 1, "stat": "Sum" } ]
+                ],
+              "view": "timeSeries",
+              "stacked": false,
+              "region": "ap-southeast-2",
+              "period": 300
+            }
+          }]
+        }

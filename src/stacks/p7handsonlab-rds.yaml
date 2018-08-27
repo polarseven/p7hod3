@@ -24,6 +24,10 @@ Parameters:
     Default: admin
     AllowedValues:
     - admin
+  DbInstanceClass:
+    Description: Instance to run DB on
+    Type: String
+    Default: 'db.t2.large'
 Resources:
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
@@ -48,7 +52,8 @@ Resources:
     Properties:
       AllocatedStorage: '5'
       StorageType: gp2
-      DBInstanceClass: db.t2.micro
+      DBInstanceClass: 
+        Ref: DbInstanceClass
       Engine: MySQL
       MasterUsername:
         Ref: DbUserName

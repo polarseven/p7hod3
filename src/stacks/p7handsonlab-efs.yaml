@@ -1,5 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Create a shared file system based on NFS'
 Parameters:
   VpcId:
     Description: Subnet id of subnet to efs
